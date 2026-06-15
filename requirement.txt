@@ -1,0 +1,8 @@
+Login Page
+
+Fields:
+- Username
+- Password
+- Login Button
+
+Generate functional test cases.
