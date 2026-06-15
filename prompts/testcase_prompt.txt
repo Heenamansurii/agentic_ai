@@ -1,0 +1,9 @@
+Generate {testcase_count} detailed functional test cases for:
+
+{requirement}
+
+For each test case provide:
+- Test Case ID
+- Test Scenario
+- Test Steps
+- Expected Result

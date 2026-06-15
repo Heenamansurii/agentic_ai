@@ -1,0 +1,87 @@
+Based on a review of your existing 5 test cases, here is a comprehensive list of **missing scenarios, negative test cases, edge cases, and security test cases** required to ensure a robust, industry-standard Login Page validation.
+
+---
+
+### **1. Missing Scenarios (Functional & Usability)**
+These are standard user-experience flow features that are absent from the current test suite.
+
+*   **Keyboard Navigation (Accessibility):**
+    *   *Scenario:* Verify that a user can navigate the login form using the `Tab` key and submit the form by pressing `Enter` when focused on the Password field or Login button.
+    *   *Expected Result:* Focus moves sequentially (Username -> Password -> Login). Pressing `Enter` triggers successful login.
+*   **"Remember Me" Functionality (If applicable):**
+    *   *Scenario:* Verify that checking the "Remember Me" checkbox retains the username upon browser restart or session expiration.
+    *   *Expected Result:* The Username field is pre-filled on subsequent visits, while the Password field remains blank.
+*   **"Forgot Password" Navigation:**
+    *   *Scenario:* Verify that clicking the "Forgot Password" link redirects the user to the Password Recovery page.
+    *   *Expected Result:* User is redirected to the correct recovery page; no active session is created.
+*   **"Show/Hide Password" Toggle:**
+    *   *Scenario:* Verify that clicking the "Eye" icon in the Password field toggles visibility.
+    *   *Expected Result:* Password changes from masked (`••••••`) to plain text, and back when toggled again.
+*   **Case Insensitivity of Username:**
+    *   *Scenario:* Verify that the Username field is case-insensitive during login (e.g., `DemoUser12` vs `demouser12`).
+    *   *Expected Result:* Login is successful regardless of username casing (standard industry practice, though passwords must remain case-sensitive).
+
+---
+
+### **2. Negative Test Cases**
+These test how the system handles invalid input, state errors, or incorrect flows.
+
+*   **Invalid Username / Valid Password:**
+    *   *Scenario:* Enter a non-existent username (e.g., `nonexistentuser`) with a valid password format.
+    *   *Expected Result:* Login is rejected with a generic message: *"Invalid username or password"* (to prevent username harvesting).
+*   **Leading/Trailing Whitespaces Handling:**
+    *   *Scenario:* Enter valid credentials but with accidental leading or trailing spaces (e.g., ` demouser12 ` or `P@ssword123 `).
+    *   *Expected Result:* The system should trim spaces from the Username field and allow successful login, but should **not** trim spaces from the Password field (as spaces can be part of a valid password).
+*   **Inactive/Unverified Account Login:**
+    *   *Scenario:* Attempt to log in with credentials of a user whose account is inactive, disabled, or pending email verification.
+    *   *Expected Result:* Login is blocked. An appropriate error message is displayed (e.g., *"Account is inactive. Please verify your email."*).
+*   **Expired Session Login:**
+    *   *Scenario:* Leave the login page idle for an extended period (session timeout limit) and then attempt to log in.
+    *   *Expected Result:* System gracefully handles the request, either processing the login or refreshing the page with an *"Expired session, please try again"* token error.
+
+---
+
+### **3. Edge Cases**
+These test the boundaries of the system, hardware, network, and data extremes.
+
+*   **Extremely Long Inputs (Boundary Value Analysis):**
+    *   *Scenario:* Input extremely long strings (e.g., 255+ characters) into both the Username and Password fields.
+    *   *Expected Result:* The system should either restrict character length on the UI or gracefully reject the input with a validation error without crashing the server (500 Internal Server Error).
+*   **Special/Unicode Characters in Credentials:**
+    *   *Scenario:* Attempt to log in with usernames/passwords containing non-Latin scripts, emojis, or symbols (e.g., `User_汉字😊`, `P@sswørđ!`).
+    *   *Expected Result:* The system supports UTF-8/Unicode and processes the login successfully (assuming they are registered).
+*   **Double-Clicking the "Login" Button:**
+    *   *Scenario:* Rapidly click the "Login" button multiple times during a slow network state.
+    *   *Expected Result:* The system disables the "Login" button after the first click, preventing duplicate authentication requests or session creation errors.
+*   **Network Interruption / Offline Mode:**
+    *   *Scenario:* Fill in credentials, disconnect the internet/network, and click "Login."
+    *   *Expected Result:* System does not hang indefinitely; displays a user-friendly offline message (e.g., *"Network error. Please check your connection."*).
+
+---
+
+### **4. Security Test Cases**
+These test the system's resilience against malicious intent, data exposure, and unauthorized access.
+
+*   **Account Lockout Policy (Brute Force Protection):**
+    *   *Scenario:* Enter an incorrect password multiple times (e.g., 5 consecutive failed attempts) for a valid username.
+    *   *Expected Result:* The account is temporarily locked (e.g., for 15 minutes). A message is displayed: *"Account locked due to too many failed attempts. Try again later."*
+*   **SQL Injection (SQLi) Vulnerability:**
+    *   *Scenario:* Enter SQL injection payloads in Username/Password fields (e.g., `' OR '1'='1` or `admin' --`).
+    *   *Expected Result:* Input is sanitized. The system rejects the login with standard validation/error messages and does not grant unauthorized access.
+*   **Cross-Site Scripting (XSS) Vulnerability:**
+    *   *Scenario:* Input malicious JavaScript payloads into the Username/Password fields (e.g., `<script>alert('XSS')</script>`).
+    *   *Expected Result:* The system sanitizes the input, does not execute the script, and rejects the login.
+*   **Browser Back Button Navigation (Post-Logout Session Check):**
+    *   *Scenario:* Log in successfully, click "Logout" to return to the Login Page, and then click the browser's "Back" button.
+    *   *Expected Result:* The user is NOT redirected back to the secure Landing Page/Dashboard. They must remain logged out, as the active session token was destroyed.
+*   **Copy Protection on Masked Password Field:**
+    *   *Scenario:* Attempt to highlight, copy (`Ctrl+C` / `Cmd+C`), or right-click to copy the text in the masked Password field.
+    *   *Expected Result:* The "Copy" function is disabled or copies blank/encrypted data, preventing clipboard exposure of the password.
+*   **Inspect Element / Clear Text Password Check:**
+    *   *Scenario:* Right-click the Password field, choose "Inspect Element", and check the HTML structure.
+    *   *Expected Result:* The `<input>` tag type must be strictly set to `type="password"`. 
+*   **Sensitive Data Exposure in Logs and URLs:**
+    *   *Scenario:* Monitor the browser Network tab and URL bar during a login request.
+    *   *Expected Result:* 
+        *   Credentials are sent via secure `POST` method (not `GET` where they would appear in the URL).
+        *   Passwords are not leaked in the client-side console or local/session storage in plain text.

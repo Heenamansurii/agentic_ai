@@ -1,0 +1,9 @@
+Generate Selenium Java automation script for:
+
+{requirement}
+
+Use:
+- Selenium WebDriver
+- TestNG
+- Proper comments
+- Best coding practices
