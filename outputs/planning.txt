@@ -1,0 +1,97 @@
+Here is a comprehensive testing strategy and functional test suite for the Login Page requirement.
+
+---
+
+# PART 1: TESTING STRATEGY
+
+## 1. Test Scope
+
+### In-Scope
+*   **UI/UX Verification:** Layout, alignment, placeholders, and responsiveness of the Username field, Password field, and Login button.
+*   **Functional Validation:** Successful logins, unsuccessful logins, empty fields, and error message validation.
+*   **Keyboard Navigation:** Accessibility checks (Tab sequence, Enter key submission).
+*   **Basic Security:** Password masking and payload transmission (checking that credentials are not sent in plain text in the URL).
+*   **Session Management:** Redirect upon success, session persistence, and logout state.
+
+### Out-of-Scope (unless specified in future requirements)
+*   "Forgot Password" flow.
+*   "Sign Up / Register" flow.
+*   Multi-Factor Authentication (MFA / 2FA).
+*   Social Media Logins (Google, Facebook, etc.).
+*   Performance/Load testing of the authentication server.
+
+---
+
+## 2. Test Types
+
+*   **Functional Testing:** To verify that the login feature works as per business logic (valid/invalid credentials).
+*   **UI & Usability Testing:** To ensure the interface is user-friendly, clean, and accessible (screen-reader friendly, correct tab-index).
+*   **Security Testing:** Verifying password masking, SQL Injection vulnerability, and transport layer security (HTTPS).
+*   **Compatibility Testing:** Testing across major browsers (Chrome, Safari, Firefox, Edge) and mobile viewports.
+*   **API Testing:** Testing the POST login endpoint directly to verify response codes (e.g., `200 OK`, `401 Unauthorized`) and response payload structure.
+
+---
+
+## 3. Risks & Mitigations
+
+| Risk | Impact | Mitigation |
+| :--- | :--- | :--- |
+| **Security Risk:** Credentials sent in plain text or cached in the browser. | High | Verify network calls use HTTPS POST; ensure browser auto-fill/autocomplete behavior aligns with security standards. |
+| **Security Risk:** Enumeration attack (error messages revealing whether the username exists). | Medium | Ensure error messages are generic (e.g., "Invalid username or password") rather than specific (e.g., "Username not found"). |
+| **Usability Risk:** Users locked out due to strict account locking without a self-service reset. | Medium | Recommend/verify a lockout policy (e.g., lock for 15 minutes after 5 failed attempts) rather than permanent lock. |
+| **Functional Risk:** "Back" button vulnerability (user hits "Back" after logging out and can still see secure pages). | High | Verify cache control headers are set to prevent page caching after logout. |
+
+---
+
+## 4. Recommended Automation Areas
+
+*   **Regression Suite (UI Level):**
+    *   Happy Path (Successful Login).
+    *   Basic validation checks (Empty fields).
+*   **Data-Driven Testing (UI Level):**
+    *   Running the login flow with a matrix of invalid credentials (invalid usernames, expired accounts, incorrect passwords) using a tool like Playwright, Selenium, or Cypress.
+*   **API Automation:**
+    *   Automating the underlying Auth API endpoint (e.g., using Postman/Newman or RestAssured) to test response payloads, response times, and HTTP status codes.
+
+---
+
+# PART 2: FUNCTIONAL TEST CASES
+
+### Assumptions made for these test cases:
+1.  A successful login redirects the user to a "Dashboard" page.
+2.  Error messages are generic for security purposes.
+3.  The password field masks input characters.
+
+### 1. Positive Test Cases (Happy Path)
+
+| TC ID | Test Case Title | Pre-conditions | Test Steps | Expected Result |
+| :--- | :--- | :--- | :--- | :--- |
+| **TC-01** | Successful Login | User has a valid registered account. | 1. Navigate to Login Page.<br>2. Enter valid Username.<br>3. Enter valid Password.<br>4. Click 'Login' button. | User is successfully logged in and redirected to the Dashboard. |
+| **TC-02** | Login via Enter Key | User has a valid registered account. | 1. Navigate to Login Page.<br>2. Enter valid Username.<br>3. Enter valid Password.<br>4. Press 'Enter' key on the keyboard. | User is successfully logged in and redirected to the Dashboard. |
+
+### 2. Negative & Validation Test Cases
+
+| TC ID | Test Case Title | Pre-conditions | Test Steps | Expected Result |
+| :--- | :--- | :--- | :--- | :--- |
+| **TC-03** | Empty Credentials | On Login Page. | 1. Leave Username and Password empty.<br>2. Click 'Login'. | Error message displayed: "Username and Password are required." (or field-specific validation errors). |
+| **TC-04** | Empty Username | On Login Page. | 1. Leave Username empty.<br>2. Enter valid Password.<br>3. Click 'Login'. | Validation error: "Username is required." |
+| **TC-05** | Empty Password | On Login Page. | 1. Enter valid Username.<br>2. Leave Password empty.<br>3. Click 'Login'. | Validation error: "Password is required." |
+| **TC-06** | Invalid Password | User exists in system. | 1. Enter valid Username.<br>2. Enter incorrect Password.<br>3. Click 'Login'. | Generic error displayed: "Invalid username or password." |
+| **TC-07** | Invalid Username | User does not exist. | 1. Enter non-existent Username.<br>2. Enter any Password.<br>3. Click 'Login'. | Generic error displayed: "Invalid username or password." |
+| **TC-08** | Case Sensitivity Check | User exists (e.g., 'UserA'). | 1. Enter username with wrong casing (e.g., 'usera').<br>2. Enter valid Password.<br>3. Click 'Login'. | *Depends on business logic:* Usually, Usernames are case-insensitive, but if sensitive: Access Denied. If insensitive: Successful Login. |
+
+### 3. Security Test Cases
+
+| TC ID | Test Case Title | Pre-conditions | Test Steps | Expected Result |
+| :--- | :--- | :--- | :--- | :--- |
+| **TC-09** | Password Masking | On Login Page. | 1. Enter characters into the Password field. | Characters are masked (displayed as dots or asterisks). No plain text is visible. |
+| **TC-10** | SQL Injection Attempt | On Login Page. | 1. Enter `' OR '1'='1` in Username.<br>2. Enter `' OR '1'='1` in Password.<br>3. Click 'Login'. | Access denied. Application handles input securely without database errors. |
+| **TC-11** | Copy/Paste Password Restriction | On Login Page. | 1. Type password in a text editor and copy it.<br>2. Try to copy/paste *out* of the password field. | Copying *out* of the password field is disabled. (Pasting *into* the field is usually allowed). |
+
+### 4. Usability & UI Test Cases
+
+| TC ID | Test Case Title | Pre-conditions | Test Steps | Expected Result |
+| :--- | :--- | :--- | :--- | :--- |
+| **TC-12** | Keyboard Navigation (Tabbing) | On Login Page. | 1. Click on Username field.<br>2. Press 'Tab' key.<br>3. Press 'Tab' key again. | Focus moves to Password field, then to the Login button in logical order. |
+| **TC-13** | Placeholders Presence | On Login Page. | 1. Observe Username and Password fields before typing. | Clear placeholder text is visible (e.g., "Enter Username", "Enter Password"). |
+| **TC-14** | Responsive Design | On Login Page. | 1. Resize browser to Mobile, Tablet, and Desktop resolutions. | Layout adapts correctly. No overlapping text, buttons are easily clickable on mobile. |

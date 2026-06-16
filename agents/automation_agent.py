@@ -1,14 +1,20 @@
-def create_automation_prompt(requirement):
+def create_automation_prompt(
+    requirement,
+    review_output
+):
 
-    with open(
-        "prompts/automation_prompt.txt",
-        "r",
-        encoding="utf-8"
-    ) as file:
-        prompt_template = file.read()
+    prompt = f"""
+Requirement:
 
-    prompt = prompt_template.format(
-        requirement=requirement
-    )
+{requirement}
+
+Review Feedback:
+
+{review_output}
+
+Generate Selenium Java automation code.
+
+Cover all important scenarios mentioned in the review.
+"""
 
     return prompt

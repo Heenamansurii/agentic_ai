@@ -44,19 +44,7 @@ else:
 
 print(f"\nGenerating {testcase_count} Test Cases")
 
-# Prompts
 
-final_prompt = create_testcase_prompt(
-requirement,
-testcase_count
-)
-
-automation_prompt = create_automation_prompt(
-requirement
-)
-
-print("\nFinal Prompt:\n")
-print(final_prompt)
 
 
 
@@ -78,9 +66,25 @@ try:
     print("\nPlanning saved in outputs/planning.txt")
 
 
+
 except Exception as e:
      print("\nPlanner Error:")
      print(e)
+     exit()
+
+     
+    # Create Final Prompt using Planner Output
+
+final_prompt = create_testcase_prompt(
+    requirement,
+    planner_response.text,
+    testcase_count
+)
+
+print("\nFinal Prompt:\n")
+print(final_prompt)
+
+
 
 
 # TEST CASE GENERATION + REVIEW
@@ -99,11 +103,10 @@ try:
     print("\nAI Response:\n")
     print(response.text)
 
-# Save Test Cases
-    with open("outputs/testcases.txt", "w", encoding="utf-8") as file:
-       file.write(response.text)
-
+    with open("outputs/testcases.txt", "w", encoding="utf-8") as file: file.write(response.text) 
     print("\nTest Cases saved in outputs/testcases.txt")
+
+
 
 # Review Prompt
     review_prompt = create_review_prompt(
@@ -122,10 +125,19 @@ try:
     print("\nReview Output:\n")
     print(review_response.text)
 
+     #save
     with open("outputs/review.txt", "w", encoding="utf-8") as file:
        file.write(review_response.text)
 
     print("\nReview saved in outputs/review.txt")
+
+    
+      #automtion
+    automation_prompt = create_automation_prompt(
+    requirement,
+    review_response.text
+)
+
 
 
 except Exception as e:
@@ -133,25 +145,27 @@ except Exception as e:
     print(e)
 
 # AUTOMATION CODE GENERATION
-
-try:
-    automation_response = client.models.generate_content(
-    model="gemini-3.5-flash",
-    contents=automation_prompt
-   )
-
-
-    print("\nAutomation Code:\n")
-    print(automation_response.text)
-
-    with open("outputs/automation.java", "w", encoding="utf-8") as file:
-       file.write(automation_response.text)
-
-    print("\nAutomation code saved in outputs/automation.java")
+if 'automation_prompt' in locals():
+    try:
+        automation_response = client.models.generate_content(
+        model="gemini-3.5-flash",
+        contents=automation_prompt
+    )
 
 
-except Exception as e:
-    print("\nAutomation Error:")
-    print(e)
+        print("\nAutomation Code:\n")
+        print(automation_response.text)
+
+        with open("outputs/automation.java", "w", encoding="utf-8") as file:
+             file.write(automation_response.text)
+
+        print("\nAutomation code saved in outputs/automation.java")
+
+
+    except Exception as e:
+        print("\nAutomation Error:")
+        print(e)
+else:
+        print("\nAutomation skipped because previous step failed.")
 
    
