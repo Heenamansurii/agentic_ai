@@ -1,97 +1,137 @@
-Here is a comprehensive testing strategy and functional test suite for the Login Page requirement.
+This document outlines a testing strategy and functional test cases for the "Login Page" requirement.
 
 ---
 
-# PART 1: TESTING STRATEGY
+## Testing Strategy: Login Page
 
-## 1. Test Scope
+### 1. Test Scope
 
-### In-Scope
-*   **UI/UX Verification:** Layout, alignment, placeholders, and responsiveness of the Username field, Password field, and Login button.
-*   **Functional Validation:** Successful logins, unsuccessful logins, empty fields, and error message validation.
-*   **Keyboard Navigation:** Accessibility checks (Tab sequence, Enter key submission).
-*   **Basic Security:** Password masking and payload transmission (checking that credentials are not sent in plain text in the URL).
-*   **Session Management:** Redirect upon success, session persistence, and logout state.
+The scope of testing for the Login Page focuses on verifying the functionality, usability, and security aspects directly related to user authentication via the provided fields and button.
 
-### Out-of-Scope (unless specified in future requirements)
-*   "Forgot Password" flow.
-*   "Sign Up / Register" flow.
-*   Multi-Factor Authentication (MFA / 2FA).
-*   Social Media Logins (Google, Facebook, etc.).
-*   Performance/Load testing of the authentication server.
+**In Scope:**
+*   **Functionality of Username Field:** Input acceptance, validation rules (e.g., character limits, allowed characters), case sensitivity.
+*   **Functionality of Password Field:** Input acceptance, validation rules, password masking, case sensitivity.
+*   **Functionality of Login Button:** Triggering authentication, enabled/disabled states.
+*   **Successful Login:** Redirection to the expected post-login page (e.g., Dashboard).
+*   **Unsuccessful Login:** Display of appropriate error messages for various invalid scenarios.
+*   **Error Handling:** Clear, concise, and user-friendly error messages for missing or incorrect credentials.
+*   **Basic UI/UX:** Presence and visibility of all elements, tab order, focus management, basic responsiveness.
+*   **Security (Basic):** Protection against common simple attacks like empty inputs, basic invalid inputs. (Deeper security testing will be covered by a dedicated security test type).
+*   **Integration:** Verification that the login page correctly interfaces with the authentication service (implicitly, via success/failure).
+
+**Out of Scope (based on *this specific* requirement):**
+*   "Forgot Password" functionality.
+*   "Register/Sign Up" functionality.
+*   "Remember Me" functionality.
+*   Account lockout mechanisms (unless specifically detailed as part of the login process).
+*   Detailed user profile management post-login.
+*   Session management *after* successful login (e.g., refreshing tokens, session expiry beyond the immediate login).
+*   Extensive performance testing under heavy load (unless specified).
+*   Deep-dive security penetration testing (SQL Injection, XSS will be touched upon functionally, but dedicated pentesting is a separate effort).
+
+### 2. Test Types
+
+Based on the requirement, the following test types are applicable:
+
+1.  **Functional Testing:**
+    *   **Purpose:** To verify that the Login Page behaves according to the specified requirements.
+    *   **Focus:** Valid/invalid inputs, successful/unsuccessful login flows, error messages, button functionality.
+    *   **Examples:** Logging in with correct credentials, attempting login with incorrect passwords, leaving fields blank.
+
+2.  **Usability Testing:**
+    *   **Purpose:** To ensure the Login Page is intuitive, easy to use, and provides a good user experience.
+    *   **Focus:** Clarity of error messages, ease of input, visual feedback, tab order, responsiveness.
+    *   **Examples:** Is the password field masked? Are error messages clear and visible? Does the page adapt to different screen sizes?
+
+3.  **Security Testing:**
+    *   **Purpose:** To identify vulnerabilities that could compromise the system or user data.
+    *   **Focus:** Input validation (preventing injection attacks), rate limiting (if implemented), protection against brute-force attacks, secure transmission of credentials.
+    *   **Examples:** Attempting SQL injection in fields, verifying SSL/TLS usage, checking for account lockout after multiple failed attempts.
+
+4.  **Performance Testing (Basic):**
+    *   **Purpose:** To assess the responsiveness and stability of the Login Page under various conditions.
+    *   **Focus:** Page load time, response time after clicking the login button.
+    *   **Examples:** Measuring the time taken to load the login page and the time taken for authentication to complete. (Note: Full load testing may be separate).
+
+5.  **Compatibility Testing:**
+    *   **Purpose:** To ensure the Login Page functions correctly across different browsers, operating systems, and devices.
+    *   **Focus:** Rendering, functionality, and responsiveness on various platforms.
+    *   **Examples:** Testing login on Chrome, Firefox, Safari, Edge, on desktop and mobile devices (iOS, Android).
+
+6.  **UI/UX Testing:**
+    *   **Purpose:** To verify the visual design, layout, and overall user interface.
+    *   **Focus:** Alignment of elements, branding consistency, font sizes, colors, responsiveness across devices.
+    *   **Examples:** Checking if the login button is centered correctly, if the logo is displayed, if text overlaps on small screens.
+
+### 3. Risks
+
+Potential risks associated with the Login Page functionality:
+
+1.  **Security Vulnerabilities (High):**
+    *   **Impact:** Unauthorized access, data breaches, account takeover, denial of service.
+    *   **Examples:** Weak input validation leading to SQL injection or XSS, lack of brute-force protection, insecure transmission of credentials.
+2.  **User Inability to Log In (High):**
+    *   **Impact:** Users cannot access the system, leading to frustration, lost productivity, and potential business loss.
+    *   **Examples:** Bugs in authentication logic, incorrect password handling, unclear error messages, UI issues preventing input.
+3.  **Poor User Experience (Medium):**
+    *   **Impact:** User frustration, negative perception of the system, potential user abandonment.
+    *   **Examples:** Confusing error messages, slow page load, unresponsiveness on certain devices, poor visual design.
+4.  **Integration Failures (Medium):**
+    *   **Impact:** Login page unable to communicate with backend authentication services, resulting in login failures despite correct credentials.
+    *   **Examples:** API endpoint changes, network issues, incorrect data mapping between frontend and backend.
+5.  **Performance Degradation (Medium):**
+    *   **Impact:** Slow login process, especially during peak times, leading to user frustration.
+    *   **Examples:** Inefficient backend queries, unoptimized frontend assets.
+6.  **Compatibility Issues (Low-Medium):**
+    *   **Impact:** Login page not working or rendering correctly on specific browsers or devices, alienating a segment of users.
+    *   **Examples:** JavaScript errors in a particular browser, CSS rendering issues.
+
+### 4. Recommended Automation Areas
+
+Automation is highly recommended for the Login Page due to its critical nature, frequent usage, and repetitive test scenarios.
+
+1.  **Functional Regression Tests:**
+    *   **Why:** To ensure that changes elsewhere in the system do not break existing login functionality.
+    *   **Examples:** Valid login, invalid credentials (password, username), empty fields, multiple invalid attempts. These should be run frequently (e.g., on every build).
+2.  **UI Element Verification:**
+    *   **Why:** To confirm the presence, visibility, and interactive state (enabled/disabled) of the Username field, Password field, and Login Button.
+    *   **Examples:** Checking if fields are present, if the button is clickable, if password input is masked.
+3.  **Data-Driven Testing:**
+    *   **Why:** To test login functionality with a large number of valid and invalid credential combinations.
+    *   **Examples:** Using a dataset of various valid users, various invalid usernames, and various invalid passwords to ensure robust error handling.
+4.  **Cross-Browser and Cross-Device Compatibility (Partial):**
+    *   **Why:** To quickly verify basic functionality across a range of popular browsers and device emulators.
+    *   **Examples:** Automating login with valid credentials and checking for successful redirection across Chrome, Firefox, Safari (desktop and mobile viewports).
+5.  **Basic Performance Metrics:**
+    *   **Why:** To monitor page load times and login response times over time and catch any significant degradations early.
+    *   **Examples:** Measuring the time taken to render the login page and the time taken from button click to successful redirect.
 
 ---
 
-## 2. Test Types
+## Functional Test Cases: Login Page
 
-*   **Functional Testing:** To verify that the login feature works as per business logic (valid/invalid credentials).
-*   **UI & Usability Testing:** To ensure the interface is user-friendly, clean, and accessible (screen-reader friendly, correct tab-index).
-*   **Security Testing:** Verifying password masking, SQL Injection vulnerability, and transport layer security (HTTPS).
-*   **Compatibility Testing:** Testing across major browsers (Chrome, Safari, Firefox, Edge) and mobile viewports.
-*   **API Testing:** Testing the POST login endpoint directly to verify response codes (e.g., `200 OK`, `401 Unauthorized`) and response payload structure.
+**Preconditions for all tests:**
+*   The application is running and the Login Page is accessible.
+*   A test user with valid credentials (e.g., Username: `testuser`, Password: `Password123!`) exists in the system.
 
----
-
-## 3. Risks & Mitigations
-
-| Risk | Impact | Mitigation |
-| :--- | :--- | :--- |
-| **Security Risk:** Credentials sent in plain text or cached in the browser. | High | Verify network calls use HTTPS POST; ensure browser auto-fill/autocomplete behavior aligns with security standards. |
-| **Security Risk:** Enumeration attack (error messages revealing whether the username exists). | Medium | Ensure error messages are generic (e.g., "Invalid username or password") rather than specific (e.g., "Username not found"). |
-| **Usability Risk:** Users locked out due to strict account locking without a self-service reset. | Medium | Recommend/verify a lockout policy (e.g., lock for 15 minutes after 5 failed attempts) rather than permanent lock. |
-| **Functional Risk:** "Back" button vulnerability (user hits "Back" after logging out and can still see secure pages). | High | Verify cache control headers are set to prevent page caching after logout. |
-
----
-
-## 4. Recommended Automation Areas
-
-*   **Regression Suite (UI Level):**
-    *   Happy Path (Successful Login).
-    *   Basic validation checks (Empty fields).
-*   **Data-Driven Testing (UI Level):**
-    *   Running the login flow with a matrix of invalid credentials (invalid usernames, expired accounts, incorrect passwords) using a tool like Playwright, Selenium, or Cypress.
-*   **API Automation:**
-    *   Automating the underlying Auth API endpoint (e.g., using Postman/Newman or RestAssured) to test response payloads, response times, and HTTP status codes.
-
----
-
-# PART 2: FUNCTIONAL TEST CASES
-
-### Assumptions made for these test cases:
-1.  A successful login redirects the user to a "Dashboard" page.
-2.  Error messages are generic for security purposes.
-3.  The password field masks input characters.
-
-### 1. Positive Test Cases (Happy Path)
-
-| TC ID | Test Case Title | Pre-conditions | Test Steps | Expected Result |
-| :--- | :--- | :--- | :--- | :--- |
-| **TC-01** | Successful Login | User has a valid registered account. | 1. Navigate to Login Page.<br>2. Enter valid Username.<br>3. Enter valid Password.<br>4. Click 'Login' button. | User is successfully logged in and redirected to the Dashboard. |
-| **TC-02** | Login via Enter Key | User has a valid registered account. | 1. Navigate to Login Page.<br>2. Enter valid Username.<br>3. Enter valid Password.<br>4. Press 'Enter' key on the keyboard. | User is successfully logged in and redirected to the Dashboard. |
-
-### 2. Negative & Validation Test Cases
-
-| TC ID | Test Case Title | Pre-conditions | Test Steps | Expected Result |
-| :--- | :--- | :--- | :--- | :--- |
-| **TC-03** | Empty Credentials | On Login Page. | 1. Leave Username and Password empty.<br>2. Click 'Login'. | Error message displayed: "Username and Password are required." (or field-specific validation errors). |
-| **TC-04** | Empty Username | On Login Page. | 1. Leave Username empty.<br>2. Enter valid Password.<br>3. Click 'Login'. | Validation error: "Username is required." |
-| **TC-05** | Empty Password | On Login Page. | 1. Enter valid Username.<br>2. Leave Password empty.<br>3. Click 'Login'. | Validation error: "Password is required." |
-| **TC-06** | Invalid Password | User exists in system. | 1. Enter valid Username.<br>2. Enter incorrect Password.<br>3. Click 'Login'. | Generic error displayed: "Invalid username or password." |
-| **TC-07** | Invalid Username | User does not exist. | 1. Enter non-existent Username.<br>2. Enter any Password.<br>3. Click 'Login'. | Generic error displayed: "Invalid username or password." |
-| **TC-08** | Case Sensitivity Check | User exists (e.g., 'UserA'). | 1. Enter username with wrong casing (e.g., 'usera').<br>2. Enter valid Password.<br>3. Click 'Login'. | *Depends on business logic:* Usually, Usernames are case-insensitive, but if sensitive: Access Denied. If insensitive: Successful Login. |
-
-### 3. Security Test Cases
-
-| TC ID | Test Case Title | Pre-conditions | Test Steps | Expected Result |
-| :--- | :--- | :--- | :--- | :--- |
-| **TC-09** | Password Masking | On Login Page. | 1. Enter characters into the Password field. | Characters are masked (displayed as dots or asterisks). No plain text is visible. |
-| **TC-10** | SQL Injection Attempt | On Login Page. | 1. Enter `' OR '1'='1` in Username.<br>2. Enter `' OR '1'='1` in Password.<br>3. Click 'Login'. | Access denied. Application handles input securely without database errors. |
-| **TC-11** | Copy/Paste Password Restriction | On Login Page. | 1. Type password in a text editor and copy it.<br>2. Try to copy/paste *out* of the password field. | Copying *out* of the password field is disabled. (Pasting *into* the field is usually allowed). |
-
-### 4. Usability & UI Test Cases
-
-| TC ID | Test Case Title | Pre-conditions | Test Steps | Expected Result |
-| :--- | :--- | :--- | :--- | :--- |
-| **TC-12** | Keyboard Navigation (Tabbing) | On Login Page. | 1. Click on Username field.<br>2. Press 'Tab' key.<br>3. Press 'Tab' key again. | Focus moves to Password field, then to the Login button in logical order. |
-| **TC-13** | Placeholders Presence | On Login Page. | 1. Observe Username and Password fields before typing. | Clear placeholder text is visible (e.g., "Enter Username", "Enter Password"). |
-| **TC-14** | Responsive Design | On Login Page. | 1. Resize browser to Mobile, Tablet, and Desktop resolutions. | Layout adapts correctly. No overlapping text, buttons are easily clickable on mobile. |
+| Test Case ID | Test Case Title | Steps to Execute | Expected Result |
+| :----------- | :---------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FP-LP-001 | **Successful Login with Valid Credentials** | 1. Navigate to the Login Page.<br>2. Enter a valid username in the "Username" field.<br>3. Enter a valid password in the "Password" field.<br>4. Click the "Login" button. | 1. User is successfully authenticated.<br>2. User is redirected to the expected post-login page (e.g., Dashboard, Home Page). |
+| FP-LP-002 | **Login with Invalid Username** | 1. Navigate to the Login Page.<br>2. Enter an invalid username (e.g., `invaliduser`) in the "Username" field.<br>3. Enter a valid password.<br>4. Click the "Login" button. | 1. User remains on the Login Page.<br>2. An appropriate error message is displayed (e.g., "Invalid username or password", "User not found"). |
+| FP-LP-003 | **Login with Invalid Password** | 1. Navigate to the Login Page.<br>2. Enter a valid username.<br>3. Enter an invalid password (e.g., `WrongPassword`) in the "Password" field.<br>4. Click the "Login" button. | 1. User remains on the Login Page.<br>2. An appropriate error message is displayed (e.g., "Invalid username or password", "Incorrect password"). |
+| FP-LP-004 | **Login with Empty Username Field** | 1. Navigate to the Login Page.<br>2. Leave the "Username" field empty.<br>3. Enter a valid password in the "Password" field.<br>4. Click the "Login" button. | 1. User remains on the Login Page.<br>2. An appropriate error message is displayed (e.g., "Username is required", "Please enter your username").<br>3. The "Username" field might be highlighted as invalid. |
+| FP-LP-005 | **Login with Empty Password Field** | 1. Navigate to the Login Page.<br>2. Enter a valid username in the "Username" field.<br>3. Leave the "Password" field empty.<br>4. Click the "Login" button. | 1. User remains on the Login Page.<br>2. An appropriate error message is displayed (e.g., "Password is required", "Please enter your password").<br>3. The "Password" field might be highlighted as invalid. |
+| FP-LP-006 | **Login with Both Fields Empty** | 1. Navigate to the Login Page.<br>2. Leave both "Username" and "Password" fields empty.<br>3. Click the "Login" button. | 1. User remains on the Login Page.<br>2. Appropriate error messages are displayed for both fields (e.g., "Username is required", "Password is required"). |
+| FP-LP-007 | **Password Field Masking** | 1. Navigate to the Login Page.<br>2. Enter any text into the "Password" field. | 1. The text entered in the "Password" field is masked (e.g., displayed as asterisks `***` or dots `...`). |
+| FP-LP-008 | **Login Button Disabled State (if applicable)** | 1. Navigate to the Login Page.<br>2. Leave both "Username" and "Password" fields empty. | 1. The "Login" button is disabled or unclickable until both fields have some input (if this is part of the design). |
+| FP-LP-009 | **"Enter" Key Functionality** | 1. Navigate to the Login Page.<br>2. Enter a valid username in the "Username" field.<br>3. Enter a valid password in the "Password" field.<br>4. Press the "Enter" key (while focus is on either field or button). | 1. User is successfully authenticated.<br>2. User is redirected to the expected post-login page. |
+| FP-LP-010 | **Username Case Sensitivity** | 1. Navigate to the Login Page.<br>2. Enter a valid username with incorrect casing (e.g., `TestUser` instead of `testuser`).<br>3. Enter a valid password.<br>4. Click the "Login" button. | 1. If username is case-sensitive: User remains on the Login Page, error message displayed.<br>2. If username is case-insensitive: User is redirected to the expected post-login page. (Clarify expected behavior with product owner). |
+| FP-LP-011 | **Password Case Sensitivity** | 1. Navigate to the Login Page.<br>2. Enter a valid username.<br>3. Enter a valid password with incorrect casing (e.g., `password123!` instead of `Password123!`).<br>4. Click the "Login" button. | 1. User remains on the Login Page.<br>2. An appropriate error message is displayed (e.g., "Invalid username or password", "Incorrect password"). (Passwords are almost always case-sensitive). |
+| FP-LP-012 | **Username Field Max Length** | 1. Navigate to the Login Page.<br>2. Enter a username exceeding the maximum allowed length (if defined) in the "Username" field.<br>3. Enter a valid password.<br>4. Click the "Login" button. | 1. The field should either truncate input, prevent further input, or display a validation error message upon submission. |
+| FP-LP-013 | **Password Field Max Length** | 1. Navigate to the Login Page.<br>2. Enter a password exceeding the maximum allowed length (if defined) in the "Password" field.<br>3. Enter a valid username.<br>4. Click the "Login" button. | 1. The field should either truncate input, prevent further input, or display a validation error message upon submission. |
+| FP-LP-014 | **Leading/Trailing Spaces in Username** | 1. Navigate to the Login Page.<br>2. Enter a valid username with leading/trailing spaces (e.g., ` testuser `).<br>3. Enter a valid password.<br>4. Click the "Login" button. | 1. User is successfully authenticated (if spaces are trimmed before validation).<br>2. If spaces are not trimmed, login fails, and an error message is displayed. (Clarify expected behavior). |
+| FP-LP-015 | **Leading/Trailing Spaces in Password** | 1. Navigate to the Login Page.<br>2. Enter a valid username.<br>3. Enter a valid password with leading/trailing spaces (e.g., ` Password123! `).<br>4. Click the "Login" button. | 1. Login should fail, and an error message should be displayed, as passwords typically do not trim spaces. |
+| FP-LP-016 | **Browser Back Button after Successful Login** | 1. Perform a successful login (FP-LP-001).<br>2. Click the browser's "Back" button. | 1. User should remain on the post-login page or be redirected to a secure landing page, not the Login Page (to prevent re-submission). |
+| FP-LP-017 | **Tab Order Navigation** | 1. Navigate to the Login Page.<br>2. Press the "Tab" key repeatedly, starting from the page load. | 1. Focus should move logically: Username field -> Password field -> Login Button -> (any other interactive elements). |
+| FP-LP-018 | **Basic Cross-Site Scripting (XSS) attempt** | 1. Navigate to the Login Page.<br>2. Enter `<script>alert('XSS');</script>` in the "Username" field.<br>3. Enter a valid password.<br>4. Click the "Login" button. | 1. The script should *not* execute. Instead, the input should be sanitized, HTML encoded, or rejected with an error message. |
+| FP-LP-019 | **Basic SQL Injection attempt** | 1. Navigate to the Login Page.<br>2. Enter `admin' --` in the "Username" field.<br>3. Enter any password in the "Password" field.<br>4. Click the "Login" button. | 1. Login should fail. The application should not allow unauthorized access or reveal database errors. A generic error message should be displayed. |

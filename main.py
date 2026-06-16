@@ -2,10 +2,14 @@ from agents.testcase_agent import create_testcase_prompt
 from agents.automation_agent import create_automation_prompt
 from agents.review_agent import create_review_prompt
 from agents.planner_agent import create_planner_prompt
+from agents.json_testcase_agent import create_json_testcase_prompt
+from utils.excel_exporter import export_testcases_to_excel
 
 from google import genai
 from dotenv import load_dotenv
 import os
+import json
+
 
 load_dotenv()
 
@@ -52,7 +56,7 @@ print(f"\nGenerating {testcase_count} Test Cases")
 
 try:
     planner_response = client.models.generate_content(
-    model="gemini-3.5-flash",
+    model="gemini-2.5-flash",
     contents=planner_prompt
     )
 
@@ -94,7 +98,7 @@ try:
 
 
     response = client.models.generate_content(
-    model="gemini-3.5-flash",
+    model="gemini-2.5-flash-lite",
     contents=final_prompt  
    )
 
@@ -118,7 +122,7 @@ try:
 
 # Review Agent
     review_response = client.models.generate_content(
-    model="gemini-3.5-flash",
+    model="gemini-2.5-flash-lite",
     contents=review_prompt
 )
 
@@ -148,7 +152,7 @@ except Exception as e:
 if 'automation_prompt' in locals():
     try:
         automation_response = client.models.generate_content(
-        model="gemini-3.5-flash",
+        model="gemini-2.5-flash-lite",
         contents=automation_prompt
     )
 
@@ -168,4 +172,52 @@ if 'automation_prompt' in locals():
 else:
         print("\nAutomation skipped because previous step failed.")
 
-   
+# ---------------------------
+
+# JSON TEST CASE AGENT
+
+# ---------------------------
+
+try:
+
+
+    json_prompt = create_json_testcase_prompt(requirement)
+
+    json_response = client.models.generate_content(
+    model="gemini-2.5-flash-lite",
+    contents=json_prompt
+)
+ 
+    print("\nJSON Test Cases:\n")
+    print(json_response.text)
+
+    with open("outputs/json_testcases.txt","w",encoding="utf-8") as file:
+       file.write(json_response.text)
+
+    print("\nJSON Test Cases saved in outputs/json_testcases.txt")
+
+# ---------------------------
+# EXCEL EXPORT (NESTED TRY)
+# ---------------------------
+    try:
+        print("\nConverting JSON to Excel...")
+
+        raw_json = json_response.text.strip()
+
+    # Remove markdown ```json
+        if "```" in raw_json:
+             raw_json = raw_json.replace("```json", "")
+             raw_json = raw_json.replace("```", "")
+
+        testcases = json.loads(raw_json)
+
+        export_testcases_to_excel(testcases)
+
+        print("\nExcel file created: outputs/testcases.xlsx")
+
+    except Exception as e:
+         print("\nExcel Export Error:")
+         print(e)
+
+         print("\nRAW OUTPUT WAS:\n")   
+         print(json_response.text)
