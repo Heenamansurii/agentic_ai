@@ -4,6 +4,7 @@ from agents.review_agent import create_review_prompt
 from agents.planner_agent import create_planner_prompt
 from agents.json_testcase_agent import create_json_testcase_prompt
 from utils.excel_exporter import export_testcases_to_excel
+from agents.playwright_agent import create_playwright_prompt
 
 from google import genai
 from dotenv import load_dotenv
@@ -195,6 +196,32 @@ try:
        file.write(json_response.text)
 
     print("\nJSON Test Cases saved in outputs/json_testcases.txt")
+
+
+# ---------------------------
+# PLAYWRIGHT AGENT
+# ---------------------------
+
+    playwright_prompt = create_playwright_prompt(
+    requirement,
+    json_response.text
+)
+
+    playwright_response = client.models.generate_content(
+    model="gemini-2.5-flash-lite",
+    contents=playwright_prompt
+)
+
+    raw_code = playwright_response.text
+
+    raw_code = raw_code.replace("```python", "")
+    raw_code = raw_code.replace("```", "")
+
+    with open("tests/generated_test.py","w",encoding="utf-8") as file:
+        file.write(raw_code)
+ 
+    print("\nPlaywright Test Generated")
+    print("\nSaved in tests/generated_test.py")
 
 # ---------------------------
 # EXCEL EXPORT (NESTED TRY)
