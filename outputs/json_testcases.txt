@@ -7,20 +7,20 @@
       "Navigate to the login page.",
       "Enter a valid username in the 'Username' field.",
       "Enter a valid password in the 'Password' field.",
-      "Click on the 'Login' button."
+      "Click the 'Login' button."
     ],
-    "expected_result": "The user is successfully logged in and redirected to the dashboard/home page."
+    "expected_result": "User is successfully logged in and redirected to the dashboard or home page."
   },
   {
     "testcase_id": "TC_LOGIN_002",
     "scenario": "Login with invalid username and valid password",
     "steps": [
       "Navigate to the login page.",
-      "Enter an invalid username in the 'Username' field.",
+      "Enter an invalid username (does not exist in the system) in the 'Username' field.",
       "Enter a valid password in the 'Password' field.",
-      "Click on the 'Login' button."
+      "Click the 'Login' button."
     ],
-    "expected_result": "An error message is displayed indicating an invalid username or password, and the user remains on the login page."
+    "expected_result": "An error message is displayed indicating invalid username or credentials. User remains on the login page."
   },
   {
     "testcase_id": "TC_LOGIN_003",
@@ -28,10 +28,10 @@
     "steps": [
       "Navigate to the login page.",
       "Enter a valid username in the 'Username' field.",
-      "Enter an invalid password in the 'Password' field.",
-      "Click on the 'Login' button."
+      "Enter an invalid password (incorrect password for the username) in the 'Password' field.",
+      "Click the 'Login' button."
     ],
-    "expected_result": "An error message is displayed indicating an invalid username or password, and the user remains on the login page."
+    "expected_result": "An error message is displayed indicating invalid password or credentials. User remains on the login page."
   },
   {
     "testcase_id": "TC_LOGIN_004",
@@ -40,9 +40,9 @@
       "Navigate to the login page.",
       "Leave the 'Username' field empty.",
       "Enter a valid password in the 'Password' field.",
-      "Click on the 'Login' button."
+      "Click the 'Login' button."
     ],
-    "expected_result": "A validation error message is displayed for the 'Username' field, and the user remains on the login page."
+    "expected_result": "An error message is displayed indicating that the username is required. User remains on the login page."
   },
   {
     "testcase_id": "TC_LOGIN_005",
@@ -51,9 +51,9 @@
       "Navigate to the login page.",
       "Enter a valid username in the 'Username' field.",
       "Leave the 'Password' field empty.",
-      "Click on the 'Login' button."
+      "Click the 'Login' button."
     ],
-    "expected_result": "A validation error message is displayed for the 'Password' field, and the user remains on the login page."
+    "expected_result": "An error message is displayed indicating that the password is required. User remains on the login page."
   },
   {
     "testcase_id": "TC_LOGIN_006",
@@ -62,73 +62,118 @@
       "Navigate to the login page.",
       "Leave the 'Username' field empty.",
       "Leave the 'Password' field empty.",
-      "Click on the 'Login' button."
+      "Click the 'Login' button."
     ],
-    "expected_result": "Validation error messages are displayed for both 'Username' and 'Password' fields, and the user remains on the login page."
+    "expected_result": "Error messages are displayed indicating that both username and password are required. User remains on the login page."
   },
   {
     "testcase_id": "TC_LOGIN_007",
-    "scenario": "Verify password field masking",
+    "scenario": "Login with special characters in username and valid password",
     "steps": [
       "Navigate to the login page.",
-      "Enter characters in the 'Password' field."
+      "Enter a username with special characters (e.g., 'user@#$') in the 'Username' field.",
+      "Enter a valid password in the 'Password' field.",
+      "Click the 'Login' button."
     ],
-    "expected_result": "The characters entered in the 'Password' field are masked (e.g., displayed as dots or asterisks)."
+    "expected_result": "Depends on system's input validation. If special characters are allowed, user logs in. If not, an appropriate error message is shown."
   },
   {
     "testcase_id": "TC_LOGIN_008",
-    "scenario": "Case sensitivity of username",
+    "scenario": "Login with special characters in password and valid username",
     "steps": [
       "Navigate to the login page.",
-      "Enter a valid username with different casing (e.g., 'Username' instead of 'username').",
-      "Enter the corresponding valid password.",
-      "Click on the 'Login' button."
+      "Enter a valid username in the 'Username' field.",
+      "Enter a password with special characters (e.g., 'P@$$w0rd!') in the 'Password' field.",
+      "Click the 'Login' button."
     ],
-    "expected_result": "If usernames are case-sensitive, login should fail. If case-insensitive, login should succeed. (Specify expected behavior based on system design)."
+    "expected_result": "Depends on system's input validation. If special characters are allowed, user logs in. If not, an appropriate error message is shown."
   },
   {
     "testcase_id": "TC_LOGIN_009",
-    "scenario": "Case sensitivity of password",
+    "scenario": "Case sensitivity of username",
     "steps": [
       "Navigate to the login page.",
-      "Enter a valid username.",
-      "Enter the valid password with different casing (e.g., 'Password' instead of 'password').",
-      "Click on the 'Login' button."
+      "Enter a valid username in lowercase (e.g., 'testuser') in the 'Username' field.",
+      "Enter the corresponding correct password in the 'Password' field.",
+      "Click the 'Login' button."
     ],
-    "expected_result": "Login should fail as passwords are typically case-sensitive. An error message should be displayed."
+    "expected_result": "User is successfully logged in and redirected to the dashboard or home page."
   },
   {
     "testcase_id": "TC_LOGIN_010",
-    "scenario": "Login with excessive characters in username",
+    "scenario": "Case sensitivity of username (positive test)",
     "steps": [
       "Navigate to the login page.",
-      "Enter a username with more characters than the expected limit (if any).",
-      "Enter a valid password.",
-      "Click on the 'Login' button."
+      "Enter a valid username in uppercase (e.g., 'TESTUSER') in the 'Username' field.",
+      "Enter the corresponding correct password in the 'Password' field.",
+      "Click the 'Login' button."
     ],
-    "expected_result": "Either the input is truncated to the maximum allowed length, or a validation error message is displayed indicating the username is too long. Login attempt should be handled gracefully."
+    "expected_result": "Depends on whether usernames are case-sensitive. If yes, user logs in. If no, user logs in if the system normalizes the input. If it requires exact match, and the stored username is lowercase, this might fail (leading to an error)."
   },
   {
     "testcase_id": "TC_LOGIN_011",
-    "scenario": "Login with special characters in username",
+    "scenario": "Case sensitivity of password",
     "steps": [
       "Navigate to the login page.",
-      "Enter a username containing special characters (e.g., '@', '#', '$').",
-      "Enter a valid password.",
-      "Click on the 'Login' button."
+      "Enter a valid username in the 'Username' field.",
+      "Enter the correct password in lowercase (e.g., 'password') in the 'Password' field.",
+      "Click the 'Login' button."
     ],
-    "expected_result": "If special characters are allowed in usernames, login should proceed. If not, a validation error should be displayed. (Specify expected behavior based on system design)."
+    "expected_result": "User is successfully logged in and redirected to the dashboard or home page."
   },
   {
     "testcase_id": "TC_LOGIN_012",
-    "scenario": "Login with special characters in password",
+    "scenario": "Case sensitivity of password (positive test)",
     "steps": [
       "Navigate to the login page.",
-      "Enter a valid username.",
-      "Enter a password containing special characters (e.g., '@', '#', '$').",
-      "Click on the 'Login' button."
+      "Enter a valid username in the 'Username' field.",
+      "Enter the correct password in uppercase (e.g., 'PASSWORD') in the 'Password' field.",
+      "Click the 'Login' button."
     ],
-    "expected_result": "Login should succeed if the password with special characters is valid. No error should be displayed unless the special characters violate password policy."
+    "expected_result": "User is successfully logged in and redirected to the dashboard or home page. Passwords are typically case-sensitive."
+  },
+  {
+    "testcase_id": "TC_LOGIN_013",
+    "scenario": "Login with excessively long username",
+    "steps": [
+      "Navigate to the login page.",
+      "Enter a username longer than the expected maximum length in the 'Username' field.",
+      "Enter a valid password in the 'Password' field.",
+      "Click the 'Login' button."
+    ],
+    "expected_result": "Depends on input validation. Either the input is truncated, an error message is displayed, or the login attempt might fail gracefully."
+  },
+  {
+    "testcase_id": "TC_LOGIN_014",
+    "scenario": "Login with excessively long password",
+    "steps": [
+      "Navigate to the login page.",
+      "Enter a valid username in the 'Username' field.",
+      "Enter a password longer than the expected maximum length in the 'Password' field.",
+      "Click the 'Login' button."
+    ],
+    "expected_result": "Depends on input validation. Either the input is truncated, an error message is displayed, or the login attempt might fail gracefully."
+  },
+  {
+    "testcase_id": "TC_LOGIN_015",
+    "scenario": "Login button disabled when fields are empty",
+    "steps": [
+      "Navigate to the login page.",
+      "Ensure both 'Username' and 'Password' fields are empty.",
+      "Observe the state of the 'Login' button."
+    ],
+    "expected_result": "The 'Login' button is disabled or visually indicates it's not clickable."
+  },
+  {
+    "testcase_id": "TC_LOGIN_016",
+    "scenario": "Login button enabled when fields are populated",
+    "steps": [
+      "Navigate to the login page.",
+      "Enter any text in the 'Username' field.",
+      "Enter any text in the 'Password' field.",
+      "Observe the state of the 'Login' button."
+    ],
+    "expected_result": "The 'Login' button becomes enabled and clickable."
   }
 ]
 ```

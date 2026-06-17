@@ -219,5 +219,9 @@ try:
          print("\nExcel Export Error:")
          print(e)
 
-         print("\nRAW OUTPUT WAS:\n")   
+         print("\nRAW OUTPUT WAS:\n")  
          print(json_response.text)
+
+except Exception as e:
+    print("\nJSON Agent Error:")
+    print(e)      
